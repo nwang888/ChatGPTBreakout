@@ -3,6 +3,9 @@ import pygame
 # Initialize pygame
 pygame.init()
 
+# Initialize font
+font = pygame.font.SysFont('Calibri', 35, bold=False, italic=False)
+
 # Set the screen size
 screen_width = 800
 screen_height = 600
@@ -52,6 +55,8 @@ ball_speed = 0.5
 ball_x_speed = ball_speed
 ball_y_speed = ball_speed
 
+score = 0
+
 # Game loop
 while True:
     for event in pygame.event.get():
@@ -78,6 +83,8 @@ while True:
             brick.hit = True
             # Remove the brick from the bricks list
             bricks.remove(brick)
+            # Increment the score
+            score += 1
     # Check for collision between the ball and the left edge of the screen
     if ball_x - ball_radius <= 0:
         ball_x_speed = abs(ball_x_speed)
@@ -104,6 +111,10 @@ while True:
 
     # Draw the ball
     pygame.draw.circle(screen, (255, 255, 255), (int(ball_x), int(ball_y)), ball_radius)
+
+    # Draw the score
+    score_text = font.render("Score: " + str(score), True, (255, 255, 255))
+    screen.blit(score_text, (10, 10))
 
     # Update the display
     pygame.display.update()
