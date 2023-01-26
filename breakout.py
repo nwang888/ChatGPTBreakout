@@ -33,6 +33,22 @@ class Brick:
         self.height = height
         self.hit = False
 
+def create_bricks():
+    bricks = []
+    brick_x_offset = 75
+    brick_y_offset = 50
+    brick_width = 50
+    brick_height = 20
+    brick_spacing = 10
+    for row in range(5):
+        for col in range(10):
+            brick_x = brick_x_offset + (brick_width + brick_spacing) * col
+            brick_y = brick_y_offset + (brick_height + brick_spacing) * row
+            brick = Brick(brick_x, brick_y, brick_width, brick_height)
+            bricks.append(brick)
+    return bricks
+
+
 # Create a list of bricks
 bricks = []
 for i in range(5):
@@ -57,6 +73,13 @@ ball_y_speed = ball_speed
 
 score = 0
 
+# Initialize game variables
+score = 0
+ball_x, ball_y = screen_width/2, screen_height/2
+ball_x_speed, ball_y_speed = ball_speed, ball_speed
+paddle_x, paddle_y = (screen_width - paddle_width)/2, screen_height - paddle_height - 10
+bricks = create_bricks()
+
 # Game loop
 while True:
     for event in pygame.event.get():
@@ -72,19 +95,25 @@ while True:
     # Check for collision between the ball and the paddle
     if check_paddle_collision(ball_x, ball_y, paddle_x, paddle_y, paddle_width, paddle_height, ball_radius):
         # Reverse the ball's y-velocity
-        ball_y_speed = -ball_y_speed
+        ball_y_speed = -ball_speed
         # Change the x-velocity of the ball depending on where it hit the paddle
         ball_x_speed = (ball_x - (paddle_x + paddle_width / 2)) * 0.1
     # Check for collision between the ball and the bricks
     for brick in bricks:
-        if check_brick_collision(ball_x, ball_y, brick.x, brick.y, brick.width, brick.height):
-            # Reverse the ball's y-velocity and mark the brick as hit
-            ball_y_speed = -ball_y_speed
-            brick.hit = True
-            # Remove the brick from the bricks list
-            bricks.remove(brick)
-            # Increment the score
-            score += 1
+        if ball_x + ball_radius > brick.x and ball_x - ball_radius < brick.x + brick.width:
+            if ball_y + ball_radius > brick.y and ball_y - ball_radius < brick.y + brick.height:
+                ball_y_speed = -ball_y_speed
+                if ball_x_speed > 0:  # moving from left to right
+                    if ball_x + ball_radius > brick.x and ball_x + ball_radius < brick.x + brick.width / 2 and (
+                            ball_y + ball_radius > brick.y or ball_y - ball_radius < brick.y + brick.height):
+                        ball_x_speed = -ball_x_speed
+                else:  # moving from right to left
+                    if ball_x - ball_radius < brick.x + brick.width and ball_x - ball_radius > brick.x + brick.width / 2 and (
+                            ball_y + ball_radius > brick.y or ball_y - ball_radius < brick.y + brick.height):
+                        ball_x_speed = -ball_x_speed
+                bricks.remove(brick)
+                score += 1
+                break
     # Check for collision between the ball and the left edge of the screen
     if ball_x - ball_radius <= 0:
         ball_x_speed = abs(ball_x_speed)
@@ -98,6 +127,15 @@ while True:
     # Move the ball based on its x and y velocities
     ball_x += ball_x_speed
     ball_y += ball_y_speed
+
+    # Check for collision between the ball and the bottom edge of the screen
+    if ball_y + ball_radius > screen_height:
+        # Reinitialize game variables
+        score = 0
+        ball_x, ball_y = screen_width/2, screen_height/2
+        ball_x_speed, ball_y_speed = ball_speed, ball_speed
+        paddle_x, paddle_y = (screen_width - paddle_width)/2, screen_height - paddle_height - 10
+        bricks = create_bricks()
 
     # Clear the screen
     screen.fill((0, 0, 0))
@@ -116,5 +154,5 @@ while True:
     score_text = font.render("Score: " + str(score), True, (255, 255, 255))
     screen.blit(score_text, (10, 10))
 
-    # Update the display
+    # Update the screen
     pygame.display.update()

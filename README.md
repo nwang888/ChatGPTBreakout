@@ -34,7 +34,7 @@ ChatGPT returns a cut-off version from my previous modification without changing
 ChatGPT outputs initialization code to create the screen and set the title of the screen.
 
 **Prompt**: “could we adjust the game such that the ball does not accelerate every loop?”
-ChatGPT fixes the issue, but a lot of the code at the end is cut off.
+ChatGPT fixes the issue, but a lot of the code at the end is cut off**.
 
 **Prompt**: “can we make it so that the edges of the screen are also a boundary that the ball can bounce off of?”
 Tells me it can, and then spits the same cut-off code out again.
